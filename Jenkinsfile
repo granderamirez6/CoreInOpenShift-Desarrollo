@@ -1,43 +1,37 @@
 pipeline {
-    agent {
-        docker {
-            image 'your-custom-jenkins-agent:latest' // Use the custom Jenkins agent Docker image with .NET SDK
-            args '-u root' // Run the container with root privileges (if required)
-        }
-    }
+    agent any
+
     stages {
-        stage('Clonar Repositorio') {
+        stage('Checkout') {
             steps {
+                // Clonar el repositorio de Git en el directorio de trabajo del agente
                 checkout scm
             }
         }
-        stage('Restaurar Dependencias') {
-            steps {
-                sh 'dotnet restore'
+
+        stage('Build and Deploy') {
+            environment {
+                // Define las variables de entorno para la construcción y el despliegue
+                // Asegúrate de reemplazar los valores con los de tu clúster OpenShift
+                OPENSHIFT_API_URL = 'https://172.30.0.1:443'
+                OPENSHIFT_TOKEN = 'sha256~zDbN-lLOZmKdatFqNDdg90Rdz2uxR77BcQ1yX7ElRgc'
+                OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
+                APPLICATION_NAME = 'granderamirez-6-dev'
+                SOURCE_REPOSITORY = 'https://github.com/granderamirez6/CoreInOpenShift'
             }
-        }
-        stage('Construir') {
             steps {
                 script {
-                    def customImageName = "image-registry.openshift-image-registry.svc:5000/granderamirez-6-dev/core-in-open-shift"
-                    // Build the Docker image
-                    sh "docker build -t $customImageName ."
+                    // Construir la imagen del contenedor utilizando S2I y .NET Core
+                    def customImageName = "${OPENSHIFT_API_URL}/your-openshift-project/${APPLICATION_NAME}"
+                    sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
+                    sh "oc new-build --name=${APPLICATION_NAME} --binary --strategy=source ${SOURCE_REPOSITORY} -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc start-build ${APPLICATION_NAME} --from-dir=. --follow -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc tag ${APPLICATION_NAME}:latest ${customImageName}:latest"
 
-                    // Push the Docker image to the container registry
-                    sh "docker push $customImageName"
-
-                    // Store the image URL in an environment variable for later use
-                    env.CUSTOM_IMAGE_URL = customImageName
+                    // Desplegar la aplicación en el clúster
+                    sh "oc new-app ${customImageName}:latest --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                 }
-            }
-        }
-        stage('Desplegar en OpenShift') {
-            steps {
-                openshiftDeploy apiURL: 'https://core-in-open-shift-granderamirez-6-dev.apps.sandbox-m3.1530.p1.openshiftapps.com',
-                    authToken: 'sha256~z3bgyhyNXaUi47gnXb7jlLdbh34NmSiPBgNPbLlc49Y',
-                    depCfg: 'core-in-open-shift', 
-                    namespace: 'granderamirez-6-dev',
-                    verbose: true
             }
         }
     }
