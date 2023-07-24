@@ -13,8 +13,8 @@ pipeline {
             environment {
                 // Define las variables de entorno para la construcción y el despliegue
                 // Asegúrate de reemplazar los valores con los de tu clúster OpenShift
-                OPENSHIFT_API_URL = 'https://172.30.0.1:443'
-                OPENSHIFT_TOKEN = 'sha256~zDbN-lLOZmKdatFqNDdg90Rdz2uxR77BcQ1yX7ElRgc'
+                OPENSHIFT_API_URL = 'https://api.sandbox-m3.1530.p1.openshiftapps.com:6443'
+                OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 APPLICATION_NAME = 'granderamirez-6-dev'
                 SOURCE_REPOSITORY = 'https://github.com/granderamirez6/CoreInOpenShift'
