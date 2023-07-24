@@ -13,7 +13,19 @@ pipeline {
         }
         stage('Construir') {
             steps {
-                sh 'dotnet build -c Release'
+                 script {
+                    def customImageName = "image-registry.openshift-image-registry.svc:5000/granderamirez-6-dev/core-in-open-shift"
+                    // Build the Docker image
+                    sh "docker build -t $customImageName ."
+
+                    // Push the Docker image to the container registry
+                    sh "docker push $customImageName"
+
+                    // Store the image URL in an environment variable for later use
+                    env.CUSTOM_IMAGE_URL = customImageName
+                }
+               
+                
             }
         }
         stage('Desplegar en OpenShift') {
