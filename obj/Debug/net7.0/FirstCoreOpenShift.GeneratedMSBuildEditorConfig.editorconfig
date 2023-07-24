@@ -9,37 +9,37 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = FirstCoreOpenShift
 build_property.RootNamespace = FirstCoreOpenShift
-build_property.ProjectDir = C:\Users\granderamirez.6\OneDrive - Teleperformance\Desktop\Git Proyects\s2i-dotnetcore-ex\FirstCoreOpenShift\
+build_property.ProjectDir = c:\Users\granderamirez.6\OneDrive - Teleperformance\Desktop\Git Proyects\CoreInOpenShift\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\granderamirez.6\OneDrive - Teleperformance\Desktop\Git Proyects\s2i-dotnetcore-ex\FirstCoreOpenShift
+build_property.MSBuildProjectDirectory = c:\Users\granderamirez.6\OneDrive - Teleperformance\Desktop\Git Proyects\CoreInOpenShift
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/s2i-dotnetcore-ex/FirstCoreOpenShift/Views/Home/Index.cshtml]
+[c:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/CoreInOpenShift/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/s2i-dotnetcore-ex/FirstCoreOpenShift/Views/Home/Privacy.cshtml]
+[c:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/CoreInOpenShift/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/s2i-dotnetcore-ex/FirstCoreOpenShift/Views/Shared/Error.cshtml]
+[c:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/CoreInOpenShift/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/s2i-dotnetcore-ex/FirstCoreOpenShift/Views/Shared/_ValidationScriptsPartial.cshtml]
+[c:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/CoreInOpenShift/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/s2i-dotnetcore-ex/FirstCoreOpenShift/Views/_ViewImports.cshtml]
+[c:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/CoreInOpenShift/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/s2i-dotnetcore-ex/FirstCoreOpenShift/Views/_ViewStart.cshtml]
+[c:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/CoreInOpenShift/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/s2i-dotnetcore-ex/FirstCoreOpenShift/Views/Shared/_Layout.cshtml]
+[c:/Users/granderamirez.6/OneDrive - Teleperformance/Desktop/Git Proyects/CoreInOpenShift/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-x1p4x70zaw
