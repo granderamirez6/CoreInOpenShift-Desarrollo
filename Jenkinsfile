@@ -16,8 +16,8 @@ pipeline {
                 OPENSHIFT_API_URL = 'https://api.sandbox-m3.1530.p1.openshiftapps.com:6443'
                 OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
-                APPLICATION_NAME = 'granderamirez-6-dev'
-                EXISTING_IMAGE_NAME = "${OPENSHIFT_API_URL}/your-openshift-project/${APPLICATION_NAME}"
+                APPLICATION_NAME = 'core-in-open-shift-app'
+                EXISTING_IMAGE_NAME = "${OPENSHIFT_API_URL}/granderamirez-6-dev/${APPLICATION_NAME}"
             }
             steps {
                 script {
