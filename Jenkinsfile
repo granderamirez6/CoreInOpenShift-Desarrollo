@@ -17,7 +17,7 @@ pipeline {
                 OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 APPLICATION_NAME = 'core-in-open-shift-app'
-                EXISTING_IMAGE_NAME = "default-route-openshift-image-registry.apps.sandbox-m3.1530.p1.openshiftapps.com/granderamirez-6-dev/core-in-open-shift"
+                EXISTING_IMAGE_NAME = "default-route-openshift-image-registry.apps.sandbox-m3.1530.p1.openshiftapps.com/granderamirez-6-dev/core-in-open-shift:latest"
             }
             steps {
                 script {
