@@ -27,8 +27,11 @@ pipeline {
                     // Delete the existing service if it already exists
                     sh "oc delete service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found"
 
+                    // Get the container name from the deployment configuration
+                    def containerName = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} -o jsonpath='{.spec.template.spec.containers[0].name}'", returnStdout: true).trim()
+
                     // Update the existing deployment configuration with the latest image
-                    sh "oc set image deploymentconfig/${APPLICATION_NAME} ${APPLICATION_NAME}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc set image dc/${APPLICATION_NAME} ${containerName}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
 
                     // Expose the service
                     sh "oc expose dc ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
