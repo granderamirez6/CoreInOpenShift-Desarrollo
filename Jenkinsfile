@@ -19,6 +19,9 @@ pipeline {
             }
             steps {
                 script {
+                    // Iniciar sesión en el clúster OpenShift
+                    sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
+
                     // Check if the DeploymentConfig exists
                     def dcExists = sh(returnStatus: true, script: "oc get dc ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
 
