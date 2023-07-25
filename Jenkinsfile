@@ -9,7 +9,7 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Build and Deploy') {
             environment {
                 // Define las variables de entorno para el despliegue
                 // Asegúrate de reemplazar los valores con los de tu clúster OpenShift
@@ -17,34 +17,26 @@ pipeline {
                 OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 APPLICATION_NAME = 'core-in-open-shift-app'
-                IMAGE_STREAM_TAG = 'latest' // Utiliza la etiqueta de la imagen deseada
-                SOURCE_REPOSITORY = 'https://github.com/granderamirez6/CoreInOpenShift'
+                EXISTING_IMAGE_NAME = "default-route-openshift-image-registry.apps.sandbox-m3.1530.p1.openshiftapps.com/granderamirez-6-dev/core-in-open-shift:latest"
             }
             steps {
                 script {
                     // Iniciar sesión en el clúster OpenShift
                     sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
 
-                    // Verificar si la imagen existe en el namespace y obtener el ID de la imagen
-                    def existingImageId = sh(script: "oc get is/${APPLICATION_NAME}:${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o jsonpath='{.status.dockerImageRepository}'", returnStdout: true).trim()
-
-                    // Si la imagen no existe, crear una nueva BuildConfig y realizar una nueva construcción
-                    if (!existingImageId) {
-                        sh "oc new-build --name=${APPLICATION_NAME} --strategy=source --code=. --image-stream=openshift/dotnet:7.0-ubi8 -n ${OPENSHIFT_NAMESPACE}"
-                        sh "oc start-build ${APPLICATION_NAME} --follow -n ${OPENSHIFT_NAMESPACE}"
-                        sh "oc tag ${APPLICATION_NAME}:latest ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE}"
+                    // Check if the build configuration already exists
+                    def buildConfigExists = sh(script: "oc get bc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStatus: true)
+                    if (buildConfigExists == 0) {
+                        // If the build configuration exists, start a new build
+                        sh "oc start-build ${APPLICATION_NAME} --from-dir=. -n ${OPENSHIFT_NAMESPACE}"
                     } else {
-                        echo "La imagen ya existe, se utilizará la imagen existente."
+                        // If the build configuration does not exist, create a new one
+                        sh "oc new-build --name=${APPLICATION_NAME} --strategy=source --code=. --image-stream=dotnet:7.0-ubi8 -n ${OPENSHIFT_NAMESPACE}"
                     }
 
-                    // Desplegar la aplicación utilizando la imagen existente
-                    def existingDeployment = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o jsonpath='{.metadata.name}'", returnStdout: true).trim()
-                    if (!existingDeployment) {
-                        sh "oc new-app ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
-                        sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
-                    } else {
-                        sh "oc rollout latest dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
-                    }
+                    // Deploy the application
+                    sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
