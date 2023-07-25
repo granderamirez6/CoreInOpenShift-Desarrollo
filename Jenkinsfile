@@ -17,7 +17,7 @@ pipeline {
                 OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 APPLICATION_NAME = 'core-in-open-shift-app'
-                IMAGE_STREAM_TAG = 'latest' // Use a specific image stream tag here
+                IMAGE_STREAM_TAG = 'latest' // Utiliza la etiqueta de la imagen deseada
                 SOURCE_REPOSITORY = 'https://github.com/granderamirez6/CoreInOpenShift'
             }
             steps {
@@ -25,26 +25,19 @@ pipeline {
                     // Iniciar sesión en el clúster OpenShift
                     sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
 
-                    // Check if the BuildConfig exists
-                    def buildConfigExists = sh(script: "oc get bc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStatus: true)
+                    // Verificar si la imagen existe en el namespace y obtener el ID de la imagen
+                    def existingImageId = sh(script: "oc get is/${APPLICATION_NAME}:${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE} --template='{{.status.dockerImageRepository}}'", returnStdout: true).trim()
 
-                    if (buildConfigExists != 0) {
-                        // Create a new BuildConfig for the application
-                        sh "oc new-build --name=${APPLICATION_NAME} --binary --strategy=source --code=. --image-stream=dotnet:5.0 -n ${OPENSHIFT_NAMESPACE}"
-                    }
-
-                    // Start the build only if the BuildConfig exists
-                    def buildStatus = sh(returnStatus: true, script: "oc get build/${APPLICATION_NAME}-1 -n ${OPENSHIFT_NAMESPACE} --no-headers")
-                    if (buildStatus != 0) {
+                    // Si la imagen no existe, crear una nueva BuildConfig y realizar una nueva construcción
+                    if (!existingImageId) {
+                        sh "oc new-build --name=${APPLICATION_NAME} --binary --strategy=source --code=. --image-stream=dotnet:7.0 -n ${OPENSHIFT_NAMESPACE}"
                         sh "oc start-build ${APPLICATION_NAME} --from-dir=. --follow -n ${OPENSHIFT_NAMESPACE}"
+                        sh "oc tag ${APPLICATION_NAME}:latest ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE}"
                     } else {
-                        echo "Build for ${APPLICATION_NAME} is already in progress or completed."
+                        echo "La imagen ya existe, se utilizará la imagen existente."
                     }
 
-                    // Tag the new image with the specified image stream tag
-                    sh "oc tag ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE}"
-
-                    // Create a new application or update the existing one
+                    // Desplegar la aplicación utilizando la imagen existente
                     def existingDeployment = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStdout: true).trim()
                     if (!existingDeployment) {
                         sh "oc new-app ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
