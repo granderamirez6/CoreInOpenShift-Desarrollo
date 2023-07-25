@@ -31,7 +31,11 @@ pipeline {
                         echo "DeploymentConfig ${APPLICATION_NAME} already exists. Reusing the existing DeploymentConfig."
                     } else {
                         // Create the DeploymentConfig if it does not exist
-                        sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                        try {
+                            sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                        } catch (Exception e) {
+                            echo "Failed to create DeploymentConfig. It may already exist."
+                        }
                     }
 
                     // Check if the service exists
