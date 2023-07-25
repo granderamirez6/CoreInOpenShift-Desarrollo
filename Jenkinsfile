@@ -28,7 +28,7 @@ pipeline {
                     def dcExists = sh(returnStatus: true, script: "oc get dc ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
 
                     if (dcExists == 0) {
-                        echo "DeploymentConfig ${APPLICATION_NAME} already exists. Reusing the existing DeploymentConfig."
+                        echo "DeploymentConfig ${APPLICATION_NAME} already exists. Reusing the existing DeploymentConfig." 
                     } else {
                         // Create the DeploymentConfig if it does not exist
                         sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
