@@ -33,11 +33,16 @@ pipeline {
                         sh "oc new-build --name=${APPLICATION_NAME} --binary --strategy=source --code=. --image-stream=dotnet:5.0 -n ${OPENSHIFT_NAMESPACE}"
                     }
 
-                    // Start the build using the source code
-                    sh "oc start-build ${APPLICATION_NAME} --from-dir=. --follow -n ${OPENSHIFT_NAMESPACE}"
+                    // Start the build only if the BuildConfig exists
+                    def buildStatus = sh(returnStatus: true, script: "oc get build/${APPLICATION_NAME}-1 -n ${OPENSHIFT_NAMESPACE} --no-headers")
+                    if (buildStatus != 0) {
+                        sh "oc start-build ${APPLICATION_NAME} --from-dir=. --follow -n ${OPENSHIFT_NAMESPACE}"
+                    } else {
+                        echo "Build for ${APPLICATION_NAME} is already in progress or completed."
+                    }
 
                     // Tag the new image with the specified image stream tag
-                    sh "oc tag ${APPLICATION_NAME}:latest ${APPLICATION_NAME}:${IMAGE_STREAM_TAG}"
+                    sh "oc tag ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE}"
 
                     // Create a new application or update the existing one
                     def existingDeployment = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStdout: true).trim()
