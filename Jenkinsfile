@@ -15,7 +15,7 @@ pipeline {
                 // Asegúrate de reemplazar los valores con los de tu clúster OpenShift
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 APPLICATION_NAME = 'core-in-open-shift-app'
-                EXISTING_IMAGE_NAME = "image-registry.openshift-image-registry.svc:port/granderamirez-6-dev/core-in-open-shift-app:latest"
+                EXISTING_IMAGE_NAME = "default-route-openshift-image-registry.apps.sandbox-m3.1530.p1.openshiftapps.com/granderamirez-6-dev/core-in-open-shift-app"
             }
             steps {
                 script {
