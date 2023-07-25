@@ -27,8 +27,8 @@ pipeline {
                     // Delete the existing service if it already exists
                     sh "oc delete service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found"
 
-                    // Create a deployment configuration using the existing image stream
-                    sh "oc create deploymentconfig ${APPLICATION_NAME} --image=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    // Update the existing deployment configuration with the latest image
+                    sh "oc set image deploymentconfig/${APPLICATION_NAME} ${APPLICATION_NAME}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
 
                     // Expose the service
                     sh "oc expose dc ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
