@@ -24,22 +24,19 @@ pipeline {
                     // Iniciar sesión en el clúster OpenShift
                     sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
 
-                    // Check if the DeploymentConfig exists
-                    def dcExists = sh(returnStatus: true, script: "oc get dc ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
+                    // Check if the Deployment exists
+                    def deploymentExists = sh(returnStatus: true, script: "oc get deployment ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
 
-                    if (dcExists == 0) {
-                        echo "DeploymentConfig ${APPLICATION_NAME} already exists. Updating the existing DeploymentConfig."
-                        // Update the existing deployment configuration with the latest image
-                        def containerName = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} -o jsonpath='{.spec.template.spec.containers[0].name}'", returnStdout: true).trim()
-                        sh "oc set image dc/${APPLICATION_NAME} ${containerName}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
-                        // Perform a manual rollout to update the pods with the latest image
-                        sh "oc rollout latest dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    if (deploymentExists == 0) {
+                        echo "Deployment ${APPLICATION_NAME} already exists. Updating the existing Deployment."
+                        // Update the existing deployment with the latest image
+                        sh "oc set image deployment/${APPLICATION_NAME} ${APPLICATION_NAME}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
                     } else {
-                        // Create the DeploymentConfig if it does not exist
+                        // Create the Deployment if it does not exist
                         try {
                             sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                         } catch (Exception e) {
-                            echo "Failed to create DeploymentConfig. It may already exist."
+                            echo "Failed to create Deployment. It may already exist."
                         }
                     }
 
@@ -51,7 +48,7 @@ pipeline {
                     } else {
                         // Create the service if it does not exist
                         try {
-                            sh "oc expose dc ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
+                            sh "oc expose deployment ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
                         } catch (Exception e) {
                             echo "Failed to create Service. It may already exist."
                         }
