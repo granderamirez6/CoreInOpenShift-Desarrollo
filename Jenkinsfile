@@ -19,6 +19,16 @@ pipeline {
             }
             steps {
                 script {
+                    // Check if the DeploymentConfig exists
+                    def dcExists = sh(returnStatus: true, script: "oc get dc ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
+
+                    if (dcExists == 0) {
+                        echo "DeploymentConfig ${APPLICATION_NAME} already exists. Reusing the existing DeploymentConfig."
+                    } else {
+                        // Create the DeploymentConfig if it does not exist
+                        sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    }
+
                     // Check if the service exists
                     def serviceExists = sh(returnStatus: true, script: "oc get service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
 
@@ -38,12 +48,6 @@ pipeline {
                         // Patch the route if it does not exist
                         sh "oc patch route ${APPLICATION_NAME} -p '{\"spec\":{\"to\":{\"name\":\"${APPLICATION_NAME}\"}}}' -n ${OPENSHIFT_NAMESPACE}"
                     }
-
-                    // Get the container name from the deployment configuration
-                    def containerName = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} -o jsonpath='{.spec.template.spec.containers[0].name}'", returnStdout: true).trim()
-
-                    // Update the existing deployment configuration with the latest image
-                    sh "oc set image dc/${APPLICATION_NAME} ${containerName}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
