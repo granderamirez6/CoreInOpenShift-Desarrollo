@@ -27,6 +27,7 @@ pipeline {
                     // Eliminar los recursos existentes si ya existen
                     sh "oc delete deployment/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                     sh "oc delete service/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc delete route/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
 
                     // Desplegar la aplicación en el clúster
                     sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
