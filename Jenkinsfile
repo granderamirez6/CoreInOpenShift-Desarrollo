@@ -32,6 +32,8 @@ pipeline {
                         // Update the existing deployment configuration with the latest image
                         def containerName = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} -o jsonpath='{.spec.template.spec.containers[0].name}'", returnStdout: true).trim()
                         sh "oc set image dc/${APPLICATION_NAME} ${containerName}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                        // Perform a manual rollout to update the pods with the latest image
+                        sh "oc rollout latest dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                     } else {
                         // Create the DeploymentConfig if it does not exist
                         try {
@@ -68,8 +70,6 @@ pipeline {
                             echo "Failed to patch the Route. It may already exist."
                         }
                     }
-                     // Perform a manual rollout to update the pods with the latest image
-                    sh "oc deploy ${APPLICATION_NAME} --latest -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
