@@ -23,7 +23,7 @@ pipeline {
                 script {
                     // Iniciar sesión en el clúster OpenShift
                     sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
-
+                    sh "oc new-app --image=${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                     // Eliminar los recursos existentes si ya existen
                     sh "oc delete deployment/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                     sh "oc delete service/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
