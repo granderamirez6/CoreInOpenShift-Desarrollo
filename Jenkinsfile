@@ -9,7 +9,7 @@ pipeline {
             }
         }
 
-        stage('Build and Deploy') {
+        stage('Deploy') {
             environment {
                 // Define las variables de entorno para el despliegue
                 // Asegúrate de reemplazar los valores con los de tu clúster OpenShift
@@ -24,18 +24,13 @@ pipeline {
                     // Iniciar sesión en el clúster OpenShift
                     sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
 
-                    // Check if the build configuration already exists
-                    def buildConfigExists = sh(script: "oc get bc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStatus: true)
-                    if (buildConfigExists == 0) {
-                        // If the build configuration exists, start a new build
-                        sh "oc start-build ${APPLICATION_NAME} --from-dir=. -n ${OPENSHIFT_NAMESPACE}"
-                    } else {
-                        // If the build configuration does not exist, create a new one
-                        sh "oc new-build --name=${APPLICATION_NAME} --strategy=source --code=. --image-stream=dotnet:7.0-ubi8 -n ${OPENSHIFT_NAMESPACE}"
-                    }
+                    // Create a deployment configuration using the existing image stream
+                    sh "oc create deploymentconfig ${APPLICATION_NAME} --image=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
 
-                    // Deploy the application
-                    sh "oc new-app ${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    // Expose the service
+                    sh "oc expose dc ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
+
+                    // Expose the route
                     sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
