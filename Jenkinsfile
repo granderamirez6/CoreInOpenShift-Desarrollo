@@ -19,20 +19,31 @@ pipeline {
             }
             steps {
                 script {
-                    // Delete the existing service if it already exists
-                    sh "oc delete service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found"
+                    // Check if the service exists
+                    def serviceExists = sh(returnStatus: true, script: "oc get service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
+
+                    if (serviceExists == 0) {
+                        echo "Service ${APPLICATION_NAME} already exists. Reusing the existing service."
+                    } else {
+                        // Create the service if it does not exist
+                        sh "oc expose dc ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
+                    }
+
+                    // Check if the route exists
+                    def routeExists = sh(returnStatus: true, script: "oc get route ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
+
+                    if (routeExists == 0) {
+                        echo "Route ${APPLICATION_NAME} already exists. Reusing the existing route."
+                    } else {
+                        // Patch the route if it does not exist
+                        sh "oc patch route ${APPLICATION_NAME} -p '{\"spec\":{\"to\":{\"name\":\"${APPLICATION_NAME}\"}}}' -n ${OPENSHIFT_NAMESPACE}"
+                    }
 
                     // Get the container name from the deployment configuration
                     def containerName = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} -o jsonpath='{.spec.template.spec.containers[0].name}'", returnStdout: true).trim()
 
                     // Update the existing deployment configuration with the latest image
                     sh "oc set image dc/${APPLICATION_NAME} ${containerName}=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
-
-                    // Expose the service
-                    sh "oc expose dc ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
-
-                    // Patch the existing route with the latest changes
-                    sh "oc patch route ${APPLICATION_NAME} -p '{\"spec\":{\"to\":{\"name\":\"${APPLICATION_NAME}\"}}}' -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
