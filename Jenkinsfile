@@ -35,6 +35,9 @@ pipeline {
 
                     // Expose the route
                     sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+
+                    // Start a new build to update the application with the latest code
+                    sh "oc start-build ${APPLICATION_NAME} --follow -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
