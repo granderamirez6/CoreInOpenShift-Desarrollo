@@ -68,6 +68,8 @@ pipeline {
                             echo "Failed to patch the Route. It may already exist."
                         }
                     }
+                     // Perform a manual rollout to update the pods with the latest image
+                    sh "oc rollout latest dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
