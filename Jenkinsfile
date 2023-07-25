@@ -18,7 +18,7 @@ pipeline {
                 OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
                 APPLICATION_NAME = 'core-in-open-shift-desarrollo'
                 EXISTING_IMAGE_NAME = "image-registry.openshift-image-registry.svc:5000/granderamirez-6-dev/core-in-open-shift-app-desarrollo"
-                BUILD_CONFIG_NAME = 'core-in-open-shift-app-desarollo'
+                BUILD_CONFIG_NAME = 'core-in-open-shift-app-desarrollo'
             }
             steps {
                 script {
