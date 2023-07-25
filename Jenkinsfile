@@ -18,26 +18,34 @@ pipeline {
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 APPLICATION_NAME = 'core-in-open-shift-app'
                 IMAGE_STREAM_TAG = 'latest' // Use a specific image stream tag here
-                IMAGE_NAME = "default-route-openshift-image-registry.apps.sandbox-m3.1530.p1.openshiftapps.com/granderamirez-6-dev/core-in-open-shift-app:${IMAGE_STREAM_TAG}"
+                SOURCE_REPOSITORY = 'https://github.com/granderamirez6/CoreInOpenShift'
             }
             steps {
                 script {
                     // Iniciar sesión en el clúster OpenShift
                     sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
 
-                    // Create a new build and deploy the application if the image stream tag is not available
-                    def imageStreamTagExists = sh(script: "oc get istag/${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStatus: true)
-                    if (imageStreamTagExists != 0) {
-                        sh "oc new-build --name=${APPLICATION_NAME} --binary --strategy=source --code=." // Build the source code into a new image
-                        sh "oc start-build ${APPLICATION_NAME} --from-dir=. --follow -n ${OPENSHIFT_NAMESPACE}"
-                        sh "oc tag ${APPLICATION_NAME}:latest ${IMAGE_NAME}"
-                        sh "oc new-app ${IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    // Check if the BuildConfig exists
+                    def buildConfigExists = sh(script: "oc get bc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStatus: true)
+
+                    if (buildConfigExists != 0) {
+                        // Create a new BuildConfig for the application
+                        sh "oc new-build --name=${APPLICATION_NAME} --binary --strategy=source --code=. --image-stream=dotnet:5.0 -n ${OPENSHIFT_NAMESPACE}"
                     }
 
-                    // Expose the service if it doesn't exist
-                    def serviceStatus = sh(returnStatus: true, script: "oc get service/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --no-headers")
-                    if (serviceStatus != 0) {
+                    // Start the build using the source code
+                    sh "oc start-build ${APPLICATION_NAME} --from-dir=. --follow -n ${OPENSHIFT_NAMESPACE}"
+
+                    // Tag the new image with the specified image stream tag
+                    sh "oc tag ${APPLICATION_NAME}:latest ${APPLICATION_NAME}:${IMAGE_STREAM_TAG}"
+
+                    // Create a new application or update the existing one
+                    def existingDeployment = sh(script: "oc get dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found=true -o name", returnStdout: true).trim()
+                    if (!existingDeployment) {
+                        sh "oc new-app ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                         sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    } else {
+                        sh "oc rollout latest dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                     }
                 }
             }
