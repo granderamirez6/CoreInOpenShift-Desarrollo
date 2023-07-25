@@ -25,7 +25,7 @@ pipeline {
                     sh "oc login ${OPENSHIFT_API_URL} --token=${OPENSHIFT_TOKEN}"
 
                     // Desplegar la aplicación utilizando la imagen existente
-                    sh "oc new-app --docker-image=${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc new-app --image=${EXISTING_IMAGE_NAME} --name=${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                     sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
