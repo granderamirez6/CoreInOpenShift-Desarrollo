@@ -69,7 +69,7 @@ pipeline {
                         }
                     }
                      // Perform a manual rollout to update the pods with the latest image
-                    sh "oc rollout latest dc/${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
+                    sh "oc deploy ${APPLICATION_NAME} --latest -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
