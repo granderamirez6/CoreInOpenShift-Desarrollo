@@ -31,7 +31,7 @@ pipeline {
                         sh "oc start-build ${APPLICATION_NAME} --from-dir=. -n ${OPENSHIFT_NAMESPACE}"
                     } else {
                         // If the build configuration does not exist, create a new one
-                        sh "oc new-build --name=${APPLICATION_NAME} --strategy=source --code=. --image-stream=openshift/dotnet:7.0-ubi8 -n ${OPENSHIFT_NAMESPACE}"
+                        sh "oc new-build --name=${APPLICATION_NAME} --strategy=source --code=. --image-stream=dotnet:7.0-ubi8 -n ${OPENSHIFT_NAMESPACE}"
                     }
 
                     // Deploy the application
