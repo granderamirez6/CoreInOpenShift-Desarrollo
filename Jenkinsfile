@@ -17,7 +17,7 @@ pipeline {
                 OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 APPLICATION_NAME = 'core-in-open-shift-app'
-                IMAGE_STREAM_TAG = 'latest' // Utiliza la etiqueta de la imagen deseada
+                IMAGE_STREAM_TAG = 'core-in-open-shift-app:latest' // Utiliza la etiqueta de la imagen deseada
                 SOURCE_REPOSITORY = 'https://github.com/granderamirez6/CoreInOpenShift'
             }
             steps {
