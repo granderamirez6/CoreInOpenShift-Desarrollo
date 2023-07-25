@@ -30,7 +30,7 @@ pipeline {
 
                     // Si la imagen no existe, crear una nueva BuildConfig y realizar una nueva construcción
                     if (!existingImageId) {
-                        sh "oc new-build --name=${APPLICATION_NAME} --strategy=source --code=. --image-stream=dotnet:5.0 -n ${OPENSHIFT_NAMESPACE}"
+                        sh "oc new-build --name=${APPLICATION_NAME} --strategy=source --code=. --image-stream=openshift/dotnet:7.0-ubi8 -n ${OPENSHIFT_NAMESPACE}"
                         sh "oc start-build ${APPLICATION_NAME} --follow -n ${OPENSHIFT_NAMESPACE}"
                         sh "oc tag ${APPLICATION_NAME}:latest ${APPLICATION_NAME}:${IMAGE_STREAM_TAG} -n ${OPENSHIFT_NAMESPACE}"
                     } else {
