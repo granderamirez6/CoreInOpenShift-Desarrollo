@@ -27,14 +27,14 @@ pipeline {
                     // Delete the existing service if it already exists
                     sh "oc delete service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE} --ignore-not-found"
 
+                    // Create a deployment configuration using the existing image stream
+                    sh "oc create deploymentconfig ${APPLICATION_NAME} --image=${EXISTING_IMAGE_NAME} -n ${OPENSHIFT_NAMESPACE}"
+
                     // Expose the service
                     sh "oc expose dc ${APPLICATION_NAME} --port=80 -n ${OPENSHIFT_NAMESPACE}"
 
-                    // Expose the route
-                    sh "oc expose service ${APPLICATION_NAME} -n ${OPENSHIFT_NAMESPACE}"
-
-                    // Start a new build to update the application with the latest code
-                    sh "oc start-build ${APPLICATION_NAME} --follow -n ${OPENSHIFT_NAMESPACE}"
+                    // Patch the existing route with the latest changes
+                    sh "oc patch route ${APPLICATION_NAME} -p '{\"spec\":{\"to\":{\"name\":\"${APPLICATION_NAME}\"}}}' -n ${OPENSHIFT_NAMESPACE}"
                 }
             }
         }
