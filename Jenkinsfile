@@ -15,7 +15,7 @@ pipeline {
                 // Asegúrate de reemplazar los valores con los de tu clúster OpenShift
                 OPENSHIFT_NAMESPACE = 'granderamirez-6-dev'
                 OPENSHIFT_API_URL = 'https://api.sandbox-m3.1530.p1.openshiftapps.com:6443'
-                OPENSHIFT_TOKEN = 'sha256~1qcyg2e-TekWQxE67c6CWNZ3WEogZItPuKpuM3Mn6QM'
+                OPENSHIFT_TOKEN = 'sha256~ZlIyK-hnBOoyXl-GUPCh6kloFwP7VzzWCB2tVkHUku8'
                 APPLICATION_NAME = 'core-in-open-shift-desarrollo'
                 EXISTING_IMAGE_NAME = "image-registry.openshift-image-registry.svc:5000/granderamirez-6-dev/core-in-open-shift-app-desarrollo"
                 BUILD_CONFIG_NAME = 'core-in-open-shift-app-desarrollo'
